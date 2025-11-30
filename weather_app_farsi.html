@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>اپلیکیشن هواشناسی پیشرفته</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+      text-align: center;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    input, button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      width: 100%;
+    }
+
+    button {
+      background-color: #0078d7;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .weather-info img {
+      width: 80px;
+      height: 80px;
+    }
+
+    .info {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>هواشناسی پیشرفته</h2>
+    <input type="text" id="cityInput" placeholder="نام شهر به انگلیسی مثل Tehran" />
+    <button onclick="getWeather()">نمایش آب و هوا</button>
+
+    <div class="weather-info" id="weatherCard" style="display: none;">
+      <h3 id="cityName"></h3>
+      <img id="weatherIcon" src="" alt="Weather Icon" />
+      <div class="info" id="description"></div>
+      <div class="info" id="temperature"></div>
+      <div class="info" id="tempRange"></div>
+      <div class="info" id="humidity"></div>
+      <div class="info" id="wind"></div>
+      <div class="info" id="sunrise"></div>
+      <div class="info" id="sunset"></div>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "322828c548484d31086244dbc25a89d8"; // کلید API واقعی‌ات رو اینجا قرار بده
+
+    function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      if (!city) {
+        alert("لطفاً نام شهر را وارد کنید.");
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=fa`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod !== 200) {
+            alert("شهر پیدا نشد یا مشکلی در API وجود دارد.");
+            return;
+          }
+
+          const iconCode = data.weather[0].icon;
+          const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+          const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString("fa-IR");
+          const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString("fa-IR");
+
+          document.getElementById("cityName").innerText = `${data.name}, ${data.sys.country}`;
+          document.getElementById("weatherIcon").src = iconUrl;
+          document.getElementById("description").innerText = `وضعیت: ${data.weather[0].description}`;
+          document.getElementById("temperature").innerText = `دما: ${data.main.temp} °C`;
+          document.getElementById("tempRange").innerText = `حداقل / حداکثر دما: ${data.main.temp_min}° / ${data.main.temp_max}°`;
+          document.getElementById("humidity").innerText = `رطوبت: ${data.main.humidity}%`;
+          document.getElementById("wind").innerText = `سرعت باد: ${data.wind.speed} متر بر ثانیه`;
+          document.getElementById("sunrise").innerText = `طلوع آفتاب: ${sunrise}`;
+          document.getElementById("sunset").innerText = `غروب آفتاب: ${sunset}`;
+
+          document.getElementById("weatherCard").style.display = "block";
+        })
+        .catch(error => {
+          console.error("خطا:", error);
+          alert("خطا در دریافت اطلاعات.");
+        });
+    }
+  </script>
+</body>
+</html>
+
+
+<!-- Produce by AmirHossein Taghizadeh -->
